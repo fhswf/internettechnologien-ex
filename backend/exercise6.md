@@ -6,17 +6,29 @@ In dieser Aufgabe sollen Sie automatisierte Tests für Ihr Express.js-Backend sc
 
 1. Installieren Sie die Pakete `jest` und `supertest`:
 
-   ```bash
-   npm install --save-dev jest supertest
-   ```
+    ```bash
+    npm install --save-dev jest supertest
+    ```
 
 2. Fügen Sie in Ihrer `package.json` folgendes hinzu, um Jest als Test-Runner zu verwenden:
 
-   ```json
-   "scripts": {
-     "test": "jest"
-   }
-   ```
+    ```json
+    "scripts": {
+      "test": "jest"
+    }
+    ```
+
+3. Erstellen Sie eine Datei `jest.config.js` im Projektverzeichnis mit folgendem Inhalt, um die Unterstützung für ECMAScript-Module (ESM) zu aktivieren:
+
+    ```js
+    export default {
+      testEnvironment: 'node',
+      transform: {},
+    };
+    ```
+
+    > [!IMPORTANT] 
+    > **Hinweis:** Falls Sie ESM verwenden (z.B. `type: "module"` in Ihrer `package.json`), stellen Sie sicher, dass Sie die neueste Jest-Version nutzen und Ihre Testdateien die Endung `.test.js` haben.
 
 ## Aufgabe 2: Schreiben Sie einen ersten Test
 
