@@ -218,6 +218,8 @@ Dazu müssen Sie auch die REST-Schnittstelle so erweitern, dass ein Login mögli
 - Im Frontend eine Methode `checkLogin(response)`, die nach einem `fetch()` den Statuscode 401 verarbeitet: 
 
     ```Javascript
+    const LOGIN_URL = "https://keycloak.gawron.cloud/realms/webentwicklung/protocol/openid-connect/auth"
+
     /** Check whether we need to login.
      * Check the status of a response object. If the status is 401, construct an appropriate 
      * login URL and redict there.
@@ -249,7 +251,7 @@ Dazu müssen Sie auch die REST-Schnittstelle so erweitern, dass ein Login mögli
     }
     ```
 
-- Eine *Backend-Route* `GET /callback`<br>
+- Eine *Backend-Route* `GET /oauth_callback`<br>
    An diese Route wird der Client vom Keycloak-Server weitergeleitet, um das Frontend mit einem JWT zu versorgen.
    Im Anschluss sollte ein Cookie gesetzt werden, das den JWT enthält, und der Benutzer auf die Startseite weitergeleitet werden.
 
