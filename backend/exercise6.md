@@ -1,75 +1,115 @@
-# Praktikum 6: Testen des Backends
+## Aufgabe 1: Swagger-Dokumentation für das REST-API
 
-In dieser Aufgabe sollen Sie automatisierte Tests für Ihr Express.js-Backend schreiben.
+Führen Sie die folgenden Schritte aus, um eine Swagger-Dokumentation zu Ihrem Express.js REST API hinzuzufügen:
 
-## Aufgabe 1: Einrichtung von Jest und Supertest
+1. Installieren Sie die benötigten Pakete:
 
-1. Installieren Sie die Pakete `jest` und `supertest`:
+```bash
+npm install swagger-ui-express swagger-jsdoc
+```
 
-    ```bash
-    npm install --save-dev jest supertest
-    ```
+2. Importieren Sie die Pakete in Ihrer Express-Anwendung (`index.js`):
 
-2. Fügen Sie in Ihrer `package.json` folgendes hinzu, um Jest als Test-Runner zu verwenden:
+```javascript
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
+```
 
-    ```json
-    "scripts": {
-      "test": "jest"
-    }
-    ```
+3. Erstellen Sie die Swagger-Options:
 
-3. Erstellen Sie eine Datei `jest.config.js` im Projektverzeichnis mit folgendem Inhalt, um die Unterstützung für ECMAScript-Module (ESM) zu aktivieren:
+```javascript
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Todo API',
+      version: '1.0.0',
+      description: 'Todo API Dokumentation',
+    },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      },
+    ],
+  },
+  apis: ['./index.js'], 
+};
+```
 
-    ```js
-    export default {
-      testEnvironment: 'node',
-      transform: {},
-    };
-    ```
+4. Erstellen Sie die Swagger-Dokumentation mit den angegebenen Optionen:
 
-    > [!IMPORTANT] 
-    > **Hinweis:** Falls Sie ESM verwenden (z.B. `type: "module"` in Ihrer `package.json`), stellen Sie sicher, dass Sie die neueste Jest-Version nutzen und Ihre Testdateien die Endung `.test.js` haben.
+```javascript
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+```
 
-## Aufgabe 2: Schreiben Sie einen ersten Test
+5. Fügen Sie den Swagger-UI-Middleware hinzu:
 
-1. Legen Sie eine Datei `backend/index.test.js` an.
-2. Schreiben Sie einen Test, der prüft, ob die Route `GET /todos` erfolgreich eine Liste von Todos zurückgibt.
+```javascript
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+```
 
-   Beispiel:
+6. Fügen Sie in Ihren Route-Dateien (`index.js`, sofern Sie Ihre Anwendung nicht weiter modularisiert haben) Kommentare hinzu, um die API-Endpunkte zu dokumentieren.
+Hier ist ein Beispiel für die `/todos` GET-Route:
 
-   ```js
-   import request from 'supertest';
-   import app from './index.js';
+```javascript
+/**
+ * @swagger
+ * /todos:
+ *  get:
+ *    summary: Gibt alle Todos zurück
+ *    tags: [Todos]
+ *    responses:
+ *      '200':
+ *        description: Eine Liste aller Todos
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Todo'
+ */
+app.get('/todos', async (req, res) => {
+  // Ihre Logik zum Abrufen der Todos
+});
+```
 
-   describe('GET /todos', () => {
-     it('sollte eine Liste von Todos zurückgeben', async () => {
-       const res = await request(app).get('/todos');
-       expect(res.statusCode).toBe(200);
-       expect(Array.isArray(res.body)).toBe(true);
-     });
-   });
-   ```
+7. Definieren Sie die Schemas für Ihre API-Objekte, indem Sie sie zu den `swaggerOptions` hinzufügen:
 
-   > **Hinweis:** Exportieren Sie Ihr Express-App-Objekt in [`index.js`](index.js), damit Sie es im Test importieren können.
+```javascript
+const swaggerOptions = {
+  // ...
+  components: {
+    schemas: {
+      Todo: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+          },
+          due: {
+            type: 'string',
+          },
+          status: {
+            type: 'integer',
+          },
+        },
+      },
+    },
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }
+    },
+  },
+  security: [{
+    bearerAuth: []
+  }]
+  // ...
+};
+```
 
-3. Führen Sie den Test aus:
+8. Starten Sie Ihre Anwendung, und öffnen Sie `http://localhost:3000/api-docs` in Ihrem Browser, um die Swagger-Dokumentation zu sehen.
 
-   ```bash
-   npm test
-   ```
-
-   Sie sollten eine Ausgabe sehen, die bestätigt, dass der Test erfolgreich war.
-
-## Aufgabe 3: Weitere Tests
-
-- Schreiben Sie weitere Tests für die Endpunkte POST, PUT und DELETE.
-- Testen Sie auch Fehlerfälle, z.B. das Abrufen eines nicht existierenden Todos.
-- Berücksichtigen Sie auch Szenarien:
-    - **Hinzufügen eines neuen Todos**
-      Überprüfen Sie, dass das Hinzufügen eines neuen Todos erfolgreich ist und das Todo in der Antwort zurückgegeben wird. Stellen Sie sicher, dass die Antwort den richtigen Statuscode (201 Created) hat und das Todo-Objekt anschließend per GET-Anfrage abgerufen werden kann.
-    - **Aktualisieren eines bestehenden Todos**
-      Überprüfen Sie, dass das Aktualisieren eines bestehenden Todos erfolgreich ist und das aktualisierte Todo in der Antwort zurückgegeben wird. Stellen Sie sicher, dass die Antwort den richtigen Statuscode (200 OK) hat und das Todo-Objekt die erwarteten Änderungen aufweist.
-    - **Löschen eines Todos**
-      Überprüfen Sie, dass das Löschen eines Todos erfolgreich ist und die Antwort den richtigen Statuscode (204 No Content) hat. Stellen Sie sicher, dass das Todo anschließend nicht mehr abgerufen werden kann.
-
-Weitere Informationen finden Sie in der [Jest-Dokumentation](https://jestjs.io/) und der [Supertest-Dokumentation](https://github.com/ladjs/supertest).
+Mit diesen Schritten haben Sie eine grundlegende Swagger-Dokumentation für Ihre Express.js REST API erstellt. Sie können die Dokumentation weiter anpassen, indem Sie mehr Kommentare und Schemas für Ihre API-Endpunkte hinzufügen. Weitere Informationen finden Sie in der offiziellen [Swagger-OpenAPI-Dokumentation](https://swagger.io/specification/).
