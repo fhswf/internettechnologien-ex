@@ -33,7 +33,7 @@ eine Funktion um und hinterher mergen Sie Ihren Code.
 - [ ] Update eines ToDos,
 - [ ] Delete eines ToDos.
 
-**Achten Sie auf die richtigen Status-Codes**: 
+**Achten Sie auf die richtigen Status-Codes im Erfolgsfall**: 
 - Create sollte `201` (created) zurückgeben,
 - Delete sollte `204` (no content) zurückgeben.
 
