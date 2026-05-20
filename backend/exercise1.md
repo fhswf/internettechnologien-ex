@@ -33,5 +33,9 @@ eine Funktion um und hinterher mergen Sie Ihren Code.
 - [ ] Update eines ToDos,
 - [ ] Delete eines ToDos.
 
+**Achten Sie auf die richtigen Status-Codes**: 
+- Create sollte `201` (created) zurückgeben,
+- Delete sollte `204` (no content) zurückgeben.
+
 > **Note**<br>
 > Um den Inhalt des Requests (den *Body*) als JSON-Objekt zu lesen, benötigen Sie die [Body Parser Middleware](https://expressjs.com/en/resources/middleware/body-parser.html)!
