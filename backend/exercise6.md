@@ -77,35 +77,36 @@ app.get('/todos', async (req, res) => {
 
 ```javascript
 const swaggerOptions = {
-  // ...
-  components: {
-    schemas: {
-      Todo: {
-        type: 'object',
-        properties: {
-          title: {
-            type: 'string',
-          },
-          due: {
-            type: 'string',
-          },
-          status: {
-            type: 'integer',
+  swaggerDefinition: {
+    // ...
+    components: {
+      schemas: {
+        Todo: {
+          type: 'object',
+          properties: {
+            title: {
+              type: 'string',
+            },
+            due: {
+              type: 'string',
+            },
+            status: {
+              type: 'integer',
+            },
           },
         },
       },
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        }
+      },
     },
-    securitySchemes: {
-      bearerAuth: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      }
-    },
-  },
-  security: [{
-    bearerAuth: []
-  }]
+    security: [{
+      bearerAuth: []
+    }]
   // ...
 };
 ```
